@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TDD_Model;
 using TDD_WPF_MVVM.DataProvider;
 using TDD_WPF_MVVM.Dialogs;
 using TDD_WPF_MVVM.Events;
@@ -37,7 +38,7 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
 
             _dataProviderMock = new Mock<IFriendDataProvider>();
             _dataProviderMock.Setup(dp => dp.GetFriendById(_friendId))
-                .Returns(new TDD_Model.Friend { Id = _friendId, FirstName = "Thomas" });
+                .Returns(new TDD_Model.Friend { Id = _friendId, FirstName = "Thomas", Address = new Address() });
 
             _messageDialogServiceMock = new Mock<IMessageDialogService>();
 
@@ -78,7 +79,7 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
         public void ShouldEnableSaveCommandWhenFriendIsChanged()
         {
             _viewModel.Load(_friendId);
-            _viewModel.Friend.BirthDay = DateTime.Now;
+            _viewModel.Friend.Birthday = DateTime.Now;
             Assert.True(_viewModel.SaveCommand.CanExecute(null));
         }
 
@@ -94,7 +95,7 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
             _viewModel.Load(_friendId);
             var fired = false;
             _viewModel.SaveCommand.CanExecuteChanged += (s, e) => fired = true;
-            _viewModel.Friend.BirthDay = DateTime.Now;
+            _viewModel.Friend.Birthday = DateTime.Now;
             Assert.True(fired);
         }
 
@@ -147,7 +148,7 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
             Assert.Equal(0,_viewModel.Friend.Id);
             Assert.Null(_viewModel.Friend.FirstName);
             Assert.Null(_viewModel.Friend.LastName);
-            Assert.Null(_viewModel.Friend.BirthDay);
+            Assert.Null(_viewModel.Friend.Birthday);
             Assert.False(_viewModel.Friend.IsDeveloper);
 
             _dataProviderMock.Verify(dp=> dp.GetFriendById(It.IsAny<int>()), Times.Never);

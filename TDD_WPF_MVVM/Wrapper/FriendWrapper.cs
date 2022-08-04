@@ -9,16 +9,23 @@ using TDD_WPF_MVVM.ViewModel;
 
 namespace TDD_WPF_MVVM.Wrapper
 {
-    public class FriendWrapper : ViewModelBase
+    public class FriendWrapper : ModelWrapper<Friend>
     {
-        private Friend _friend;
         private bool _isChanged;
 
-        public FriendWrapper(Friend friend)
+        public FriendWrapper(Friend friend) : base(friend)
         {
-            _friend = friend;
+            InitializeComplexProperties(friend);
         }
-        public Friend Model { get { return _friend; } }
+
+        private void InitializeComplexProperties(Friend friend)
+        {
+            if (friend.Address is null)
+            {
+                throw new ArgumentException("Address cant be null","Address");
+            }
+            Address = new AddressWrapper(friend.Address);
+        }
 
         public bool IsChanged
         {
@@ -37,48 +44,41 @@ namespace TDD_WPF_MVVM.Wrapper
 
         public int Id
         {
-            get { return _friend.Id; }      
+            get { return GetValue<int>(); }
+            set { SetValue(value); }
+        }
+
+        public int FriendgroupId
+        {
+            get { return GetValue<int>(); }
+            set { SetValue(value); }
         }
 
         public string FirstName
         {
-            get { return _friend.FirstName; }
-            set
-            {
-                _friend.FirstName = value;
-                OnPropertyChanged();
-            }
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
         }
 
         public string LastName
         {
-            get { return _friend.LastName; }
-            set
-            {
-                _friend.LastName = value;
-                OnPropertyChanged();
-            }
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
         }
-
-        public DateTime? BirthDay
+           
+        public DateTime? Birthday
         {
-            get { return _friend.Birthday; }
-            set
-            {
-                _friend.Birthday = value;
-                OnPropertyChanged();
-            }
+            get { return GetValue<DateTime?>(); }
+            set { SetValue(value); }
         }
 
         public bool IsDeveloper
         {
-            get { return _friend.IsDeveloper; }
-            set
-            {
-                _friend.IsDeveloper = value;
-                OnPropertyChanged();
-            }
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
         }
+
+        public AddressWrapper Address { get; private set; }
 
         protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {

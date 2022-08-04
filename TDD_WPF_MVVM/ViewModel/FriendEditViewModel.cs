@@ -54,7 +54,7 @@ namespace TDD_WPF_MVVM.ViewModel
         {
             var friend = friendId.HasValue
                 ? _dataProvider.GetFriendById(friendId.Value)
-                : new Friend();
+                : new Friend() { Address = new Address(), Emails = new List<FriendEmail>()};
             Friend = new FriendWrapper(friend);
             Friend.PropertyChanged += Friend_PropertyChanged;
 

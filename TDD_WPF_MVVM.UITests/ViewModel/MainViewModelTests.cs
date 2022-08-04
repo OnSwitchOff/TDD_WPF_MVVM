@@ -46,7 +46,7 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
                 .Callback<int?>(friendId =>
                 {
                     friendEditViewModelMock.Setup(vm => vm.Friend)
-                    .Returns(new FriendWrapper(new Friend { Id = friendId.Value }));
+                    .Returns(new FriendWrapper(new Friend { Id = friendId.Value, Address = new Address(), Emails = new List<FriendEmail>() }));
                 });
             _friendsEditViewModelMocks.Add(friendEditViewModelMock);
             return friendEditViewModelMock.Object;
