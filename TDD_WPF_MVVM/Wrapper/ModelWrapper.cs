@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -35,6 +36,27 @@ namespace TDD_WPF_MVVM.Wrapper
                 propertiInfo.SetValue(Model, value);
                 OnPropertyChanged(propertyName);
             }
+        }
+        protected void RegisterCollection<TWrapper, TModel>(ObservableCollection<TWrapper> wrapperCollection, List<TModel> modelCollection) where TWrapper : ModelWrapper<TModel>
+        {
+            wrapperCollection.CollectionChanged += (s, e) =>
+            {
+                if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+                {
+                    foreach (TWrapper item in e.OldItems!)
+                    {
+                        modelCollection.Remove(item.Model);
+                    }
+
+                }
+                else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+                {
+                    foreach (TWrapper item in e.NewItems!)
+                    {
+                        modelCollection.Add(item.Model);
+                    }
+                }
+            };
         }
     }
 }

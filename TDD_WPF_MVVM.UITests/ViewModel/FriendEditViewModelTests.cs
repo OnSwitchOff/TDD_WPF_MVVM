@@ -38,7 +38,7 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
 
             _dataProviderMock = new Mock<IFriendDataProvider>();
             _dataProviderMock.Setup(dp => dp.GetFriendById(_friendId))
-                .Returns(new TDD_Model.Friend { Id = _friendId, FirstName = "Thomas", Address = new Address() });
+                .Returns(new TDD_Model.Friend { Id = _friendId, FirstName = "Thomas", Address = new Address(), Emails= new List<FriendEmail>() });
 
             _messageDialogServiceMock = new Mock<IMessageDialogService>();
 

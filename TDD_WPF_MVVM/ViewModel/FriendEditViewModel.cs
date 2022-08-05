@@ -33,9 +33,7 @@ namespace TDD_WPF_MVVM.ViewModel
             _messageDialogService = messageDialogService;
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new DelegateCommand(OnDeleteExecute, OnDeleteCanExecute);
-        }
-
-      
+        }      
 
         public ICommand SaveCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -13,10 +14,24 @@ namespace TDD_WPF_MVVM.Wrapper
     {
         private bool _isChanged;
 
-        public FriendWrapper(Friend friend) : base(friend)
+        public FriendWrapper(Friend model) : base(model)
         {
-            InitializeComplexProperties(friend);
+            InitializeComplexProperties(model);
+            InitializeCollectionProperties(model);
         }
+
+        private void InitializeCollectionProperties(Friend friend)
+        {
+            if (friend.Emails is null)
+            {
+                throw new ArgumentException("Emails cant be null", "Emails");
+            }
+            Emails = new ObservableCollection<FriendEmailWrapper>(friend.Emails.Select( e => new FriendEmailWrapper(e)));
+
+            RegisterCollection(Emails, friend.Emails);
+        }
+
+      
 
         private void InitializeComplexProperties(Friend friend)
         {
@@ -79,6 +94,8 @@ namespace TDD_WPF_MVVM.Wrapper
         }
 
         public AddressWrapper Address { get; private set; }
+
+        public ObservableCollection<FriendEmailWrapper> Emails { get; private set; }
 
         protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
