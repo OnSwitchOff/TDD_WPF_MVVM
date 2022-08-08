@@ -86,21 +86,21 @@ namespace TDD_DataAccess
                 return new List<Friend>
                 {
                     new Friend{Id=1,FirstName = "Thomas",LastName="Huber",
-                        Birthday = new DateTime(1980,10,28), IsDeveloper = true},
-                    new Friend{Id=2,FirstName = "Julia",LastName="Huber",
+                        Birthday = new DateTime(1980,10,28), IsDeveloper = true, Address = new Address(), Emails = new List<FriendEmail>()},
+                    new Friend{Id=2,FirstName = "Julia",LastName="Huber", Address = new Address(), Emails = new List<FriendEmail>(),
                         Birthday = new DateTime(1982,10,10)},
                     new Friend{Id=3,FirstName="Anna",LastName="Huber",
-                        Birthday = new DateTime(2011,05,13)},
+                        Birthday = new DateTime(2011,05,13), Address = new Address(), Emails = new List<FriendEmail>()},
                     new Friend{Id=4,FirstName="Sara",LastName="Huber",
-                        Birthday = new DateTime(2013,02,25)},
+                        Birthday = new DateTime(2013,02,25), Address = new Address(), Emails = new List<FriendEmail>()},
                     new Friend{Id=5,FirstName = "Andreas",LastName="Böhler",
-                        Birthday = new DateTime(1981,01,10), IsDeveloper = true},
+                        Birthday = new DateTime(1981,01,10), IsDeveloper = true, Address = new Address(), Emails = new List<FriendEmail>()},
                     new Friend{Id=6,FirstName="Urs",LastName="Meier",
-                        Birthday = new DateTime(1970,03,5), IsDeveloper = true},
+                        Birthday = new DateTime(1970,03,5), IsDeveloper = true, Address = new Address(), Emails = new List<FriendEmail>()},
                      new Friend{Id=7,FirstName="Chrissi",LastName="Heuberger",
-                        Birthday = new DateTime(1987,07,16)},
+                        Birthday = new DateTime(1987,07,16), Address = new Address(), Emails = new List<FriendEmail>()},
                      new Friend{Id=8,FirstName="Erkan",LastName="Egin",
-                        Birthday = new DateTime(1983,05,23)},
+                        Birthday = new DateTime(1983,05,23), Address = new Address(), Emails = new List<FriendEmail>()},
                 };
             }
 
