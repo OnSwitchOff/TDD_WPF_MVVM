@@ -25,6 +25,7 @@ namespace TDD_WPF_MVVM.ViewModel
         private IEventAggregator _eventAggregator;
         private IMessageDialogService _messageDialogService;
         private FriendWrapper _friend;
+        private FriendEmailWrapper _selectedEmail;
 
         public FriendEditViewModel(IFriendDataProvider dataProvider,IEventAggregator eventAggregator, IMessageDialogService messageDialogService)
         {
@@ -33,10 +34,14 @@ namespace TDD_WPF_MVVM.ViewModel
             _messageDialogService = messageDialogService;
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new DelegateCommand(OnDeleteExecute, OnDeleteCanExecute);
-        }      
+            RemoveEmailCommand = new DelegateCommand(OnRemoveEmailExecute, OnRemoveEmailCanExecute);
+            AddEmailCommand = new DelegateCommand(OnAddEmailExecute, OnAddEmailCanExecute);
+        }     
 
         public ICommand SaveCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
+        public ICommand RemoveEmailCommand { get; private set; }
+        public ICommand AddEmailCommand { get; private set; }
 
         public FriendWrapper Friend 
         {
@@ -47,6 +52,17 @@ namespace TDD_WPF_MVVM.ViewModel
                 OnPropertyChanged();
             }
         }        
+
+        public FriendEmailWrapper SelectedEmail
+        {
+            get => _selectedEmail;
+            set
+            {
+                _selectedEmail = value;
+                OnPropertyChanged();
+                ((DelegateCommand)RemoveEmailCommand).RaiseCanExecuteChanged();
+            }
+        }
 
         public void Load(int? friendId)
         {
@@ -96,7 +112,29 @@ namespace TDD_WPF_MVVM.ViewModel
         private bool OnDeleteCanExecute(object? obj)
         {
             return Friend is not null && Friend.Id > 0;
+        }         
+
+        private bool OnRemoveEmailCanExecute(object? obj)
+        {
+            return SelectedEmail is not null;
         }
+
+        private void OnRemoveEmailExecute(object? obj)
+        {
+            Friend.Emails.Remove(SelectedEmail);
+        }
+
+
+        private void OnAddEmailExecute(object? obj)
+        {
+            Friend.Emails.Add(new FriendEmailWrapper(new FriendEmail()));
+        }
+
+        private bool OnAddEmailCanExecute(object? obj)
+        {
+            return true;
+        }      
+        
 
     }
 }

@@ -118,7 +118,6 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
             _dataProviderMock.Verify((dp) => dp.SaveFriend(_viewModel.Friend.Model),Times.Once);
         }
 
-
         [Fact]
         public void ShouldAcceptChangesWhenSaveCommandIsExecuted()
         {
