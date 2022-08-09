@@ -9,6 +9,7 @@ using System.Windows.Input;
 using TDD_Model;
 using TDD_WPF_MVVM.Command;
 using TDD_WPF_MVVM.DataProvider;
+using TDD_WPF_MVVM.Dialogs;
 using TDD_WPF_MVVM.Events;
 
 namespace TDD_WPF_MVVM.ViewModel
@@ -17,11 +18,14 @@ namespace TDD_WPF_MVVM.ViewModel
     {
         private IFriendEditViewModel? _selectedFriendEditViewModel;
         private Func<IFriendEditViewModel> _friendEditVmCreator;
+        private IMessageDialogService _messageDialogService;
 
         public MainViewModel(INavigationViewModel navigationViewModel,
             Func<IFriendEditViewModel> friendEditVmCreator,
-            IEventAggregator eventAggregator)
+            IEventAggregator eventAggregator,
+            IMessageDialogService messageDialogService)
         {
+            _messageDialogService = messageDialogService;
             NavigationViewModel = navigationViewModel;
             FriendEditViewModels = new ObservableCollection<IFriendEditViewModel>();
             _friendEditVmCreator = friendEditVmCreator;
@@ -42,12 +46,24 @@ namespace TDD_WPF_MVVM.ViewModel
         {
             IFriendEditViewModel? friendEditVm = obj as IFriendEditViewModel;
             if (friendEditVm is not null)
-            FriendEditViewModels.Remove(friendEditVm);
+            {
+                if(friendEditVm.Friend.IsChanged)
+                {
+                    var result = _messageDialogService.ShowYesNoDialog("Close tab?","You'll lose your changes if you close this tab.Close it?");
+                    if (result == MessageDialogResult.No)
+                    {
+                        return;
+                    }
+                }
+                FriendEditViewModels.Remove(friendEditVm);
+            } 
         }
         private void OnAddFriendExecute(object? obj)
         {
             SelectedFriendEditViewModel = CreateAndLoadFriendEditViewModel(null);
         }
+
+       
 
         private IFriendEditViewModel CreateAndLoadFriendEditViewModel(int? friendId)
         {
@@ -68,6 +84,7 @@ namespace TDD_WPF_MVVM.ViewModel
         }
         public ICommand AddFriendCommand { get; private set; }
         public ICommand CloseFriendTabCommand { get; private set; }
+
         public INavigationViewModel NavigationViewModel { get; private set; }
         public ObservableCollection<IFriendEditViewModel> FriendEditViewModels { get; private set; }
         public IFriendEditViewModel SelectedFriendEditViewModel

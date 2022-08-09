@@ -11,6 +11,7 @@ using TDD_WPF_MVVM.ViewModel;
 using Xunit;
 using TDD_WPF_MVVM.UITests.Extensions;
 using TDD_WPF_MVVM.Wrapper;
+using TDD_WPF_MVVM.Dialogs;
 
 namespace TDD_WPF_MVVM.UITests.ViewModel
 {
@@ -22,9 +23,11 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
         private MainViewModel _viewModel;
         private List<Mock<IFriendEditViewModel>> _friendsEditViewModelMocks;
         private FriendDeletedEvent _friendDeletedEvent;
+        private Mock<IMessageDialogService> _messageDialogServiceMock;
 
         public MainViewModelTests()
         {
+            _messageDialogServiceMock = new Mock<IMessageDialogService>();
             _friendDeletedEvent = new FriendDeletedEvent();
             _friendsEditViewModelMocks = new List<Mock<IFriendEditViewModel>>();
             _navigationViewModelMock = new Mock<INavigationViewModel>();
@@ -36,7 +39,7 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
                  .Returns(_friendDeletedEvent);
 
             _viewModel = new MainViewModel(_navigationViewModelMock.Object,
-                CreateFriendEditViewModel,_eventAggregator.Object);
+                CreateFriendEditViewModel,_eventAggregator.Object, _messageDialogServiceMock.Object);
         }
 
         private IFriendEditViewModel CreateFriendEditViewModel()

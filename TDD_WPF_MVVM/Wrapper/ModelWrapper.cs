@@ -39,6 +39,7 @@ namespace TDD_WPF_MVVM.Wrapper
             }
             _originalValues.Clear();
             OnPropertyChanged("");
+            //OnPropertyChanged("IsChanged");
         }
 
         public void RejectChanges()
@@ -54,6 +55,7 @@ namespace TDD_WPF_MVVM.Wrapper
             }
             _originalValues.Clear();
             OnPropertyChanged("");
+            //OnPropertyChanged("IsChanged");
         }
 
         protected TValue GetValue<TValue>([CallerMemberName] string propertyName = null)

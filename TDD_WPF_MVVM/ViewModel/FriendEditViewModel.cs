@@ -36,12 +36,14 @@ namespace TDD_WPF_MVVM.ViewModel
             DeleteCommand = new DelegateCommand(OnDeleteExecute, OnDeleteCanExecute);
             RemoveEmailCommand = new DelegateCommand(OnRemoveEmailExecute, OnRemoveEmailCanExecute);
             AddEmailCommand = new DelegateCommand(OnAddEmailExecute, OnAddEmailCanExecute);
+            ResetCommand = new DelegateCommand(OnResetExecute, OnResetCanExecute);
         }     
 
         public ICommand SaveCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
         public ICommand RemoveEmailCommand { get; private set; }
         public ICommand AddEmailCommand { get; private set; }
+        public ICommand ResetCommand { get; private set; }
 
         public FriendWrapper Friend 
         {
@@ -69,7 +71,9 @@ namespace TDD_WPF_MVVM.ViewModel
             var friend = friendId.HasValue
                 ? _dataProvider.GetFriendById(friendId.Value)
                 : new Friend() { Address = new Address(), Emails = new List<FriendEmail>()};
+
             Friend = new FriendWrapper(friend);
+
             Friend.PropertyChanged += Friend_PropertyChanged;
 
             InvalidateComands();
@@ -77,13 +81,14 @@ namespace TDD_WPF_MVVM.ViewModel
 
         private void Friend_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            InvalidateComands();
+            InvalidateComands();                   
         }
 
         private void InvalidateComands()
         {
             ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
             ((DelegateCommand)DeleteCommand).RaiseCanExecuteChanged();
+            ((DelegateCommand)ResetCommand).RaiseCanExecuteChanged();
         }
 
         private void OnSaveExecute(object? obj)
@@ -133,8 +138,16 @@ namespace TDD_WPF_MVVM.ViewModel
         private bool OnAddEmailCanExecute(object? obj)
         {
             return true;
-        }      
-        
+        }
 
+        private void OnResetExecute(object? obj)
+        {
+            Friend.RejectChanges();
+        }
+
+        private bool OnResetCanExecute(object? obj)
+        {
+            return Friend is not null && Friend.Id > 0 && Friend.IsChanged;
+        }
     }
 }
