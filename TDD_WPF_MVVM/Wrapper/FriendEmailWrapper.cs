@@ -15,7 +15,13 @@ namespace TDD_WPF_MVVM.Wrapper
         }
 
         public int Id { get => GetValue<int>(); set => SetValue(value); }
+        public int IdOriginal => GetOriginalValue<int>(nameof(Id));
+        public bool IdIsChanged => GetIsChanged(nameof(Id));
         public string Email { get => GetValue<string>(); set => SetValue(value); }
+        public string EmailOriginal => GetOriginalValue<string>(nameof(Email));
+        public bool EmailIsChanged => GetIsChanged(nameof(Email));
         public string Comment { get => GetValue<string>(); set => SetValue(value); }
+        public string CommentOriginal => GetOriginalValue<string>(nameof(Comment));
+        public bool CommentIsChanged => GetIsChanged(nameof(Comment));
     }
 }

@@ -23,7 +23,7 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
             {
                 FirstName = "Thijs",
                 LastName = "LastIce",
-                Address = new Address(),
+                Address = new Address { City = "Mariupol"},
                 Emails = new List<FriendEmail>
                 {
                     new FriendEmail { Id = 1, Email ="email1"},
@@ -128,11 +128,144 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
             wrapper.Emails.Remove(emailToRemove);
             CheckIfModelEmailsCollectiomIsInSync(wrapper);
         }
-
         private void CheckIfModelEmailsCollectiomIsInSync(FriendWrapper wrapper)
         {
             Assert.Equal(_friend.Emails.Count, wrapper.Emails.Count);
             Assert.True(_friend.Emails.All(e => wrapper.Emails.Any(we => we.Model == e)));
         }
+
+        [Fact]
+        private void ShouldStoreOriginalValue()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            Assert.Equal("Thijs", wrapper.FirstNameOriginal);
+
+            wrapper.FirstName = "Julia";
+            Assert.Equal("Thijs", wrapper.FirstNameOriginal);
+        }
+
+        [Fact]
+        private void ShouldSetIsChangedValue()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            Assert.False(wrapper.FirstNameIsChanged);
+            Assert.False(wrapper.IsChanged);
+
+            wrapper.FirstName = "Julia";
+            Assert.True(wrapper.FirstNameIsChanged);
+            Assert.True(wrapper.IsChanged);
+
+            wrapper.FirstName = "Thijs";
+            Assert.False(wrapper.FirstNameIsChanged);
+            Assert.False(wrapper.IsChanged);
+        }
+
+        [Fact]
+        public void ShouldRaisePropertyChangedEventForFirstNameIsChanged()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            var fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.FirstName = "Julia",
+                nameof(wrapper.FirstNameIsChanged));
+            Assert.True(fired);
+        }
+        [Fact]
+        public void ShouldRaisePropertyChangedEventForIsChanged()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            var fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.FirstName = "Julia",
+                nameof(wrapper.IsChanged));
+            Assert.True(fired);
+        }
+
+
+        [Fact]
+        public void ShouldAcceptChanges()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            wrapper.FirstName = "Julia";
+            Assert.Equal("Julia", wrapper.FirstName);
+            Assert.Equal("Thijs", wrapper.FirstNameOriginal);
+            Assert.True(wrapper.FirstNameIsChanged);
+            Assert.True(wrapper.IsChanged);
+            wrapper.AcceptChanges();
+
+            Assert.Equal("Julia", wrapper.FirstName);
+            Assert.Equal("Julia", wrapper.FirstNameOriginal);
+            Assert.False(wrapper.FirstNameIsChanged);
+            Assert.False(wrapper.IsChanged);
+        }
+
+
+        [Fact]
+        public void ShouldRejectedChanges()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            wrapper.FirstName = "Julia";
+            Assert.Equal("Julia", wrapper.FirstName);
+            Assert.Equal("Thijs", wrapper.FirstNameOriginal);
+            Assert.True(wrapper.FirstNameIsChanged);
+            Assert.True(wrapper.IsChanged);
+            wrapper.RejectChanges();
+
+            Assert.Equal("Thijs", wrapper.FirstName);
+            Assert.Equal("Thijs", wrapper.FirstNameOriginal);
+            Assert.False(wrapper.FirstNameIsChanged);
+            Assert.False(wrapper.IsChanged);
+        }
+
+        [Fact]
+        public void ShouldSetIsChangedOfFriendWrapper()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            wrapper.Address.City = "Salt Lake City";     
+            Assert.True(wrapper.IsChanged);
+
+            wrapper.Address.City = "Mariupol";
+            Assert.False(wrapper.IsChanged);
+        }
+
+
+        [Fact]
+        public void ShouldRaisePropertyChangedEventForIsCHangedPropertyOfFriendWrapp()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            var fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.Address.City = "Salt Lake City",
+                nameof(wrapper.IsChanged));
+            Assert.True(fired);
+        }
+
+
+        [Fact]
+        public void ShouldAcceptChangesForAddressChanged()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            wrapper.Address.City = "Salt Lake City";
+            Assert.Equal("Mariupol", wrapper.Address.CityOriginal);
+
+            wrapper.AcceptChanges();
+
+            Assert.Equal("Salt Lake City", wrapper.Address.City);
+            Assert.Equal("Salt Lake City", wrapper.Address.CityOriginal);
+            Assert.False(wrapper.IsChanged);
+        }
+
+
+        [Fact]
+        public void ShouldRejectedChangesForAddressChanged()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            wrapper.Address.City = "Salt Lake City";
+            Assert.Equal("Mariupol", wrapper.Address.CityOriginal);
+
+            wrapper.RejectChanges();
+
+            Assert.Equal("Mariupol", wrapper.Address.City);
+            Assert.Equal("Mariupol", wrapper.Address.CityOriginal);
+            Assert.False(wrapper.IsChanged);
+        }
     }
 }
+
