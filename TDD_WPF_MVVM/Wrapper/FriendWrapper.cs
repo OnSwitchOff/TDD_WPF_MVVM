@@ -24,7 +24,7 @@ namespace TDD_WPF_MVVM.Wrapper
             {
                 throw new ArgumentException("Emails cant be null", "Emails");
             }
-            Emails = new ObservableCollection<FriendEmailWrapper>(friend.Emails.Select(e => new FriendEmailWrapper(e)));
+            Emails = new ChangeTrackingCollection<FriendEmailWrapper>(friend.Emails.Select(e => new FriendEmailWrapper(e)));
 
             RegisterCollection(Emails, friend.Emails);
         }
@@ -94,15 +94,15 @@ namespace TDD_WPF_MVVM.Wrapper
 
         public AddressWrapper Address { get; private set; }
 
-        public ObservableCollection<FriendEmailWrapper> Emails { get; private set; }
+        public ChangeTrackingCollection<FriendEmailWrapper> Emails { get; private set; }
 
-        protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            base.OnPropertyChanged(propertyName);
-            if (propertyName != nameof(IsChanged))
-            {
-                //IsChanged = true;
-            }
-        }
+        //protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        //{
+        //    base.OnPropertyChanged(propertyName);
+        //    if (propertyName != nameof(IsChanged))
+        //    {
+        //        //IsChanged = true;
+        //    }
+        //}
     }
 }

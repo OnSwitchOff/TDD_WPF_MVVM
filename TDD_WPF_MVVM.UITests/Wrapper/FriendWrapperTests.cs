@@ -266,6 +266,68 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
             Assert.Equal("Mariupol", wrapper.Address.CityOriginal);
             Assert.False(wrapper.IsChanged);
         }
+
+        [Fact]
+        public void ShouldSetIsChangedOfFriendWrapperWhenEmailsCollectionChanged()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            var removedEmail = wrapper.Emails.First();
+            wrapper.Emails.Remove(removedEmail);
+            Assert.True(wrapper.IsChanged);
+        }
+
+
+        [Fact]
+        public void ShouldRaisePropertyChangedEventForIsCHangedPropertyOfFriendWrappWhenEmailsCollectionChanged()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            var removedEmail = wrapper.Emails.First();
+            var fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.Emails.Remove(removedEmail),
+                nameof(wrapper.IsChanged));
+            Assert.True(fired);
+        }
+
+        [Fact]
+        public void ShouldAcceptChangesForEmailsChanged()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            var modEmail = wrapper.Emails.First();
+            modEmail.Email = "email33";
+            Assert.Equal("email1", modEmail.EmailOriginal);
+            Assert.True(wrapper.IsChanged);
+
+            wrapper.AcceptChanges();
+
+            Assert.Equal("email33", modEmail.Email);
+            Assert.Equal("email33", modEmail.EmailOriginal);
+            Assert.False(wrapper.IsChanged);
+        }
+
+
+        [Fact]
+        public void ShouldRejectedChangesForEmailsChanged()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            var modEmail = wrapper.Emails.First();
+            modEmail.Email = "email33";
+            Assert.Equal("email1", modEmail.EmailOriginal);
+            Assert.True(wrapper.IsChanged);
+
+            wrapper.RejectChanges();
+
+            Assert.Equal("email1", modEmail.Email);
+            Assert.Equal("email1", modEmail.EmailOriginal);
+            Assert.False(wrapper.IsChanged);
+        }
+
+        [Fact]
+        public void ShouldBeInSyncAfterClearingEmail()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            wrapper.Emails.Clear();
+            CheckIfModelEmailsCollectiomIsInSync(wrapper);
+        }
     }
 }
 

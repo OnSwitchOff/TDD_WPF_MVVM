@@ -103,37 +103,28 @@ namespace TDD_WPF_MVVM.Wrapper
             return _originalValues.ContainsKey(propertyName);
         }
 
-        protected void RegisterCollection<TWrapper, TModel>(ObservableCollection<TWrapper> wrapperCollection, List<TModel> modelCollection) where TWrapper : ModelWrapper<TModel>
+        protected void RegisterCollection<TWrapper, TModel>(ChangeTrackingCollection<TWrapper> wrapperCollection, List<TModel> modelCollection) where TWrapper : ModelWrapper<TModel>
         {
             wrapperCollection.CollectionChanged += (s, e) =>
             {
-                if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-                {
-                    foreach (TWrapper item in e.OldItems!)
-                    {
-                        modelCollection.Remove(item.Model);
-                    }
-
-                }
-                else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-                {
-                    foreach (TWrapper item in e.NewItems!)
-                    {
-                        modelCollection.Add(item.Model);
-                    }
-                }
+                modelCollection.Clear();
+                modelCollection.AddRange(wrapperCollection.Select(w => w.Model));                
             };
+            RegisterTrackingObject(wrapperCollection);
         }
 
         protected void RegisterComplex<TModel>(ModelWrapper<TModel> wrapper)
         {
-            if (!_trackingObjects.Contains(wrapper))
+            RegisterTrackingObject(wrapper);
+        }
+
+        private void RegisterTrackingObject<TTrackingObject>(TTrackingObject trackingObject) where TTrackingObject: IRevertibleChangeTracking, INotifyPropertyChanged
+        {
+            if (!_trackingObjects.Contains(trackingObject))
             {
-                _trackingObjects.Add(wrapper);
-                wrapper.PropertyChanged += TrackingObjectPropertyChanged;
+                _trackingObjects.Add(trackingObject);
+                trackingObject.PropertyChanged += TrackingObjectPropertyChanged;
             }
-
-
         }
 
         private void TrackingObjectPropertyChanged(object? sender, PropertyChangedEventArgs e)
