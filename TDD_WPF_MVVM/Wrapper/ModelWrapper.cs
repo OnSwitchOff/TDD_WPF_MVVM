@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,7 +11,7 @@ using TDD_WPF_MVVM.ViewModel;
 
 namespace TDD_WPF_MVVM.Wrapper
 {
-    public class ModelWrapper<T> : ViewModelBase, IRevertibleChangeTracking
+    public class ModelWrapper<T> : NotifyDataErrorInfoBase, IRevertibleChangeTracking
     {
         private Dictionary<string, object?> _originalValues;
         private List<IRevertibleChangeTracking> _trackingObjects;
@@ -26,10 +27,8 @@ namespace TDD_WPF_MVVM.Wrapper
         }
         public T Model { get; private set; }
 
-        public bool IsChanged
-        {
-            get { return _originalValues.Count > 0 || _trackingObjects.Any(t => t.IsChanged); }
-        }
+        public bool IsChanged => _originalValues.Count > 0 || _trackingObjects.Any(t => t.IsChanged);
+        public bool IsValid => !HasErrors;
 
         public void AcceptChanges()
         {
@@ -70,9 +69,31 @@ namespace TDD_WPF_MVVM.Wrapper
             {
                 UpdateOriginalValue(currentValue, newValue, propertyName);
                 propertiInfo.SetValue(Model, newValue);
+                ValidateProperty(propertyName, newValue);
                 OnPropertyChanged(propertyName);
                 OnPropertyChanged(propertyName + "IsChanged");
             }          
+        }
+
+        private void ValidateProperty(string propertyName, object? newValue)
+        {
+            var results = new List<ValidationResult>();
+            var context = new ValidationContext(this) { MemberName=propertyName };
+
+            Validator.TryValidateProperty(newValue, context, results);
+
+            if (results.Any())
+            {
+                Errors[propertyName] = results.Select(r => r.ErrorMessage!).Distinct().ToList();
+                OnErrorsChanged(propertyName);
+                OnPropertyChanged(nameof(IsValid));
+            }
+            else if (Errors.ContainsKey(propertyName))
+            {
+                Errors.Remove(propertyName);
+                OnErrorsChanged(propertyName);
+                OnPropertyChanged(nameof(IsValid));
+            }            
         }
 
         private void UpdateOriginalValue(object? currentValue, object? newValue, string propertyName)

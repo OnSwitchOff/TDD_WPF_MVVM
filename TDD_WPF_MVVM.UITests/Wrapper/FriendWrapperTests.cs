@@ -328,6 +328,79 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
             wrapper.Emails.Clear();
             CheckIfModelEmailsCollectiomIsInSync(wrapper);
         }
+
+
+
+
+        [Fact]
+        public void ShouldReturnValidationErrorIfFirstNameIsEmpty()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            Assert.False(wrapper.HasErrors);
+
+            wrapper.FirstName = "";
+            Assert.True(wrapper.HasErrors);
+
+            var errors = wrapper.GetErrors(nameof(wrapper.FirstName)).Cast<string>();
+            Assert.Single(errors);
+            Assert.Equal("Firstname is required", errors.First());
+
+            wrapper.FirstName = "Julia";
+            Assert.False(wrapper.HasErrors);
+        }
+
+        [Fact]
+        public void ShouldRaiseErrorsChangedEventWhenFirstNameSetToEmpty()
+        {
+            var fired = false;
+
+            var wrapper = new FriendWrapper(_friend);
+            wrapper.ErrorsChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(wrapper.FirstName))
+                {
+                    fired = true;
+                }
+            };
+
+            wrapper.FirstName = "";
+            Assert.True(fired);
+
+            fired = false;
+            wrapper.FirstName = "Julia";
+            Assert.True(fired);
+        }
+
+
+        [Fact]
+        public void ShouldSetIsValid()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            Assert.True(wrapper.IsValid);
+
+            wrapper.FirstName = "";
+            Assert.False(wrapper.IsValid);
+
+            wrapper.FirstName = "Julia";
+            Assert.True(wrapper.IsValid);
+        }
+
+        [Fact]
+        public void ShouldRaiseEPropertyChangedEventForIsValid()
+        {
+            
+
+            var wrapper = new FriendWrapper(_friend);
+            var fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.FirstName = "",
+                nameof(wrapper.IsValid));
+
+            fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.FirstName = "Julia",
+                nameof(wrapper.IsValid));
+            Assert.True(fired);
+        }
+
     }
 }
 

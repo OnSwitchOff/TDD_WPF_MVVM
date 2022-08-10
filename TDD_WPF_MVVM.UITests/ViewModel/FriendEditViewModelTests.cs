@@ -246,5 +246,7 @@ namespace TDD_WPF_MVVM.UITests.ViewModel
                 Times.Once);
         }
 
+
+
     }
 }

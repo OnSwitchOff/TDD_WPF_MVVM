@@ -81,7 +81,11 @@ namespace TDD_WPF_MVVM.ViewModel
 
         private void Friend_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            InvalidateComands();                   
+            if (e.PropertyName == nameof(Friend.IsChanged) 
+            || e.PropertyName == nameof(Friend.IsValid))
+            {
+                InvalidateComands();
+            }                
         }
 
         private void InvalidateComands()
@@ -100,7 +104,7 @@ namespace TDD_WPF_MVVM.ViewModel
 
         private bool OnSaveCanExecute(object? obj)
         {
-            return Friend is not null && Friend.IsChanged;
+            return Friend is not null && Friend.IsChanged && Friend.IsValid;
         }
 
      

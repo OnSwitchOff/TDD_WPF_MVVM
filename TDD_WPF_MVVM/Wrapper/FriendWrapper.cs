@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TDD_Model;
 using TDD_WPF_MVVM.ViewModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace TDD_WPF_MVVM.Wrapper
 {
@@ -53,9 +54,9 @@ namespace TDD_WPF_MVVM.Wrapper
         }
 
         public int FriendgroupIdIOriginal => GetOriginalValue<int>(nameof(FriendgroupId));
-
         public bool FriendgroupIdIsChanged => GetIsChanged(nameof(FriendgroupId));
 
+        [Required(ErrorMessage = "Firstname is required")]
         public string FirstName
         {
             get { return GetValue<string>(); }
