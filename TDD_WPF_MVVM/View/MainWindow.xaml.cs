@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,12 @@ namespace TDD_WPF_MVVM.View
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _viewModel.Load();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            _viewModel.OnClosing(e);
         }
     }
 }

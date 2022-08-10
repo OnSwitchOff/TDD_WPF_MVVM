@@ -36,14 +36,14 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
             Assert.Equal(3, c.Count);
             Assert.Single(c.AddedItems);
             Assert.Empty(c.RemovedItems);
-            Assert.Empty(c.ModifiededItems);
+            Assert.Empty(c.ModifiedItems);
             Assert.Equal(emailToAdd, c.AddedItems.First());
 
             c.Remove(emailToAdd);
             Assert.Equal(2, c.Count);
             Assert.Empty(c.AddedItems);
             Assert.Empty(c.RemovedItems);
-            Assert.Empty(c.ModifiededItems);
+            Assert.Empty(c.ModifiedItems);
             Assert.False(c.IsChanged);
         }
 
@@ -61,14 +61,14 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
             Assert.Single(c);
             Assert.Empty(c.AddedItems);
             Assert.Single(c.RemovedItems);
-            Assert.Empty(c.ModifiededItems);
+            Assert.Empty(c.ModifiedItems);
             Assert.Equal(emailToRemove, c.RemovedItems.First());
 
             c.Add(emailToRemove);
             Assert.Equal(2, c.Count);
             Assert.Empty(c.AddedItems);
             Assert.Empty(c.RemovedItems);
-            Assert.Empty(c.ModifiededItems);
+            Assert.Empty(c.ModifiedItems);
             Assert.False(c.IsChanged);
         }
 
@@ -86,14 +86,14 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
             Assert.Equal(2, c.Count);
             Assert.Empty(c.AddedItems);
             Assert.Empty(c.RemovedItems);
-            Assert.Single(c.ModifiededItems);
-            Assert.Equal(emailToModify, c.ModifiededItems.First());
+            Assert.Single(c.ModifiedItems);
+            Assert.Equal(emailToModify, c.ModifiedItems.First());
 
             emailToModify.Email = "email1";
             Assert.Equal(2, c.Count);
             Assert.Empty(c.AddedItems);
             Assert.Empty(c.RemovedItems);
-            Assert.Empty(c.ModifiededItems);
+            Assert.Empty(c.ModifiedItems);
             Assert.False(c.IsChanged);
         }
 

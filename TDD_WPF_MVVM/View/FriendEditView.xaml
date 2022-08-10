@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TDD_WPF_MVVM.View"
+             xmlns:controls="clr-namespace:TDD_WPF_MVVM.View.Controls"
+             xmlns:behaviors="clr-namespace:TDD_WPF_MVVM.Behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -11,8 +13,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>        
+            <RowDefinition Height="Auto"/> 
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -24,12 +27,13 @@
 
         <Label Content="Firstname" Margin="5"/>
         <TextBox Text="{Binding Friend.FirstName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Grid.Column="1"/>
-
+        
         <Label Content="Lastname" Grid.Row="1" Margin="5"/>
         <TextBox Text="{Binding Friend.LastName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="1"/>
 
         <Label Content="Birthday" Grid.Row="2" Margin="5"/>
-        <DatePicker SelectedDate="{Binding Friend.Birthday,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="1" Width="150" HorizontalAlignment="Left"/>
+        <DatePicker SelectedDate="{Binding Friend.Birthday,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"                   
+                    Grid.Row="2" Grid.Column="1" Width="150" HorizontalAlignment="Left"/>
 
         <Label Content="Is Developer" Grid.Row="3" Margin="5 0"/>
         <CheckBox IsChecked="{Binding Friend.IsDeveloper,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
@@ -58,8 +62,11 @@
             <Button Grid.Row="2" Content="Remove" Command="{Binding RemoveEmailCommand}" Margin="5"/>
         </Grid>
 
-        <DataGrid Grid.Row="4" Grid.Column="1" ItemsSource="{Binding Friend.Emails}" SelectedItem="{Binding SelectedEmail, Mode=TwoWay}" AutoGenerateColumns="False" Grid.ColumnSpan="3" Margin="5" Background="Gray">
+        <DataGrid Grid.Row="4" Grid.Column="1"
+                  behaviors:DataGridChangeBehavior.IsActive="True"
+                  ItemsSource="{Binding Friend.Emails}" SelectedItem="{Binding SelectedEmail, Mode=TwoWay}" AutoGenerateColumns="False" Grid.ColumnSpan="3" Margin="5,0" Background="Gray">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="Email" Binding="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <DataGridTemplateColumn Width="*">
                     <DataGridTemplateColumn.Header>
                         <Grid>
@@ -91,8 +98,9 @@
             </DataGrid.Columns>
         </DataGrid>
 
+        <controls:CangeTrackingCollectionInfo DataContext="{Binding Friend.Emails}" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Margin="5,0,5,5"/>
 
-        <StackPanel Grid.Row="5" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+        <StackPanel Grid.Row="6" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
             <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
             <Button Content="Reset" Command="{Binding ResetCommand}" Margin="5"/>
             <Button Content="Delete" Command="{Binding DeleteCommand}" Margin="5"/>

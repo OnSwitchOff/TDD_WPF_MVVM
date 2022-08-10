@@ -29,8 +29,6 @@ namespace TDD_WPF_MVVM.Wrapper
             RegisterCollection(Emails, friend.Emails);
         }
 
-
-
         private void InitializeComplexProperties(Friend friend)
         {
             if (friend.Address is null)
@@ -47,14 +45,15 @@ namespace TDD_WPF_MVVM.Wrapper
             get { return GetValue<int>(); }
             set { SetValue(value); }
         }
- 
 
         public int FriendgroupId
         {
             get { return GetValue<int>(); }
             set { SetValue(value); }
         }
+
         public int FriendgroupIdIOriginal => GetOriginalValue<int>(nameof(FriendgroupId));
+
         public bool FriendgroupIdIsChanged => GetIsChanged(nameof(FriendgroupId));
 
         public string FirstName
@@ -88,21 +87,11 @@ namespace TDD_WPF_MVVM.Wrapper
             get { return GetValue<bool>(); }
             set { SetValue(value); }
         }
-
         public bool IsDeveloperOriginal => GetOriginalValue<bool>(nameof(IsDeveloper));
         public bool IsDeveloperIsChanged => GetIsChanged(nameof(IsDeveloper));
 
         public AddressWrapper Address { get; private set; }
 
         public ChangeTrackingCollection<FriendEmailWrapper> Emails { get; private set; }
-
-        //protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        //{
-        //    base.OnPropertyChanged(propertyName);
-        //    if (propertyName != nameof(IsChanged))
-        //    {
-        //        //IsChanged = true;
-        //    }
-        //}
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -100,6 +101,15 @@ namespace TDD_WPF_MVVM.ViewModel
         public void Load()
         {
             NavigationViewModel.Load();
+        }
+
+        public void OnClosing(CancelEventArgs e)
+        {
+            if (FriendEditViewModels.Any(f => f.Friend.IsChanged))
+            {
+                var result = _messageDialogService.ShowYesNoDialog("Close application?", "You'll lose your changes if you close this application.Close it?");
+                e.Cancel = result == MessageDialogResult.No;                
+            }
         }
     }
 }

@@ -29,14 +29,14 @@ namespace TDD_WPF_MVVM.Wrapper
 
             AddedItems = new ReadOnlyObservableCollection<T>(_addeddItems);
             RemovedItems = new ReadOnlyObservableCollection<T>(_removedItems);
-            ModifiededItems = new ReadOnlyObservableCollection<T>(_modifiedItems);
+            ModifiedItems = new ReadOnlyObservableCollection<T>(_modifiedItems);
         }
 
         public ReadOnlyObservableCollection<T> AddedItems { get; private set; }
         public ReadOnlyObservableCollection<T> RemovedItems { get; private set; }
-        public ReadOnlyObservableCollection<T> ModifiededItems { get; private set; }
+        public ReadOnlyObservableCollection<T> ModifiedItems { get; private set; }
 
-        public bool IsChanged => AddedItems.Count > 0 || RemovedItems.Count > 0 || ModifiededItems.Count > 0;
+        public bool IsChanged => AddedItems.Count > 0 || RemovedItems.Count > 0 || ModifiedItems.Count > 0;
 
         public void AcceptChanges()
         {
@@ -57,10 +57,12 @@ namespace TDD_WPF_MVVM.Wrapper
             foreach (var addedItem in _addeddItems.ToList())
             {
                 Remove(addedItem);
+                addedItem.PropertyChanged -= Item_PropertyChanged;
             }
             foreach (var removedItem in _removedItems.ToList())
             {
                 Add(removedItem);
+                removedItem.PropertyChanged += Item_PropertyChanged;
             }
             foreach (var modifiedItem in _modifiedItems.ToList())
             {
@@ -113,7 +115,6 @@ namespace TDD_WPF_MVVM.Wrapper
         {
             var added = this.Where(current => _originalCollection.All(orig => orig != current));
             var removed = _originalCollection.Where(orig => this.All(current => orig != current));
-
             var modified = this.Except(added).Except(removed).Where(item => item.IsChanged).ToList();
 
             AttachItemPropertyChangedHandler(added);
