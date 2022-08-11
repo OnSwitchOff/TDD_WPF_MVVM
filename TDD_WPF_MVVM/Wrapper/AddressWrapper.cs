@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace TDD_WPF_MVVM.Wrapper
         public int Id { get => GetValue<int>(); set => SetValue(value); }
         public int IdOriginal => GetOriginalValue<int>(nameof(Id));
         public bool IdIsChanged => GetIsChanged(nameof(Id));
+
+        [Required(ErrorMessage = "City is required")]
         public string City { get => GetValue<string>(); set => SetValue(value); }
         public string CityOriginal => GetOriginalValue<string>(nameof(City));
         public bool CityIsChanged => GetIsChanged(nameof(City));

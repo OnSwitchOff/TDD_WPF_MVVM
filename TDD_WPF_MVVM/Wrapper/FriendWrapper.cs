@@ -15,11 +15,10 @@ namespace TDD_WPF_MVVM.Wrapper
     {
         public FriendWrapper(Friend model) : base(model)
         {
-            InitializeComplexProperties(model);
-            InitializeCollectionProperties(model);
+
         }
 
-        private void InitializeCollectionProperties(Friend friend)
+        protected override void InitializeCollectionProperties(Friend friend)
         {
             if (friend.Emails is null)
             {
@@ -30,7 +29,7 @@ namespace TDD_WPF_MVVM.Wrapper
             RegisterCollection(Emails, friend.Emails);
         }
 
-        private void InitializeComplexProperties(Friend friend)
+        protected override void InitializeComplexProperties(Friend friend)
         {
             if (friend.Address is null)
             {
@@ -54,9 +53,7 @@ namespace TDD_WPF_MVVM.Wrapper
         }
 
         public int FriendgroupIdIOriginal => GetOriginalValue<int>(nameof(FriendgroupId));
-        public bool FriendgroupIdIsChanged => GetIsChanged(nameof(FriendgroupId));
-
-        [Required(ErrorMessage = "Firstname is required")]
+        public bool FriendgroupIdIsChanged => GetIsChanged(nameof(FriendgroupId)); 
         public string FirstName
         {
             get { return GetValue<string>(); }
@@ -94,5 +91,20 @@ namespace TDD_WPF_MVVM.Wrapper
         public AddressWrapper Address { get; private set; }
 
         public ChangeTrackingCollection<FriendEmailWrapper> Emails { get; private set; }
+
+        public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (string.IsNullOrEmpty(FirstName))
+            {
+                yield return new ValidationResult("Firstname is required",
+                    new[] { nameof(FirstName) });
+            }
+
+            if(IsDeveloper && Emails.Count == 0)
+            {
+                yield return new ValidationResult("A developer must have an email-address",
+                    new[] {nameof(IsDeveloper), nameof(Emails) });
+            }
+        }
     }
 }

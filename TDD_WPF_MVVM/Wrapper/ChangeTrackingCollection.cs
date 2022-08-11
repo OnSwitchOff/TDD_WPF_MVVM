@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace TDD_WPF_MVVM.Wrapper
 {
-    public class ChangeTrackingCollection<T> : ObservableCollection<T>, IRevertibleChangeTracking where T : class, IRevertibleChangeTracking, INotifyPropertyChanged
+    public class ChangeTrackingCollection<T> : ObservableCollection<T>, IValidatableTrackingObject where T : class, IValidatableTrackingObject
     {
         private IList<T> _originalCollection;
 
@@ -37,6 +37,8 @@ namespace TDD_WPF_MVVM.Wrapper
         public ReadOnlyObservableCollection<T> ModifiedItems { get; private set; }
 
         public bool IsChanged => AddedItems.Count > 0 || RemovedItems.Count > 0 || ModifiedItems.Count > 0;
+
+        public bool IsValid => this.All(t=>t.IsValid);
 
         public void AcceptChanges()
         {
@@ -88,6 +90,10 @@ namespace TDD_WPF_MVVM.Wrapper
 
         private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(IsValid))
+            {
+                OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsValid)));
+            }
             var item = (T)sender!;
             if (_addeddItems.Contains(item))
             {
@@ -126,6 +132,7 @@ namespace TDD_WPF_MVVM.Wrapper
 
             base.OnCollectionChanged(e);
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsChanged)));
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsValid)));
         }
 
         private void UpdateObservableCollection(ObservableCollection<T> collection, IEnumerable<T> items)

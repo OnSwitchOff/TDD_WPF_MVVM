@@ -11,10 +11,10 @@ using TDD_WPF_MVVM.ViewModel;
 
 namespace TDD_WPF_MVVM.Wrapper
 {
-    public class ModelWrapper<T> : NotifyDataErrorInfoBase, IRevertibleChangeTracking
+    public class ModelWrapper<T> : NotifyDataErrorInfoBase, IValidatableTrackingObject, IValidatableObject
     {
         private Dictionary<string, object?> _originalValues;
-        private List<IRevertibleChangeTracking> _trackingObjects;
+        private List<IValidatableTrackingObject> _trackingObjects;
         public ModelWrapper(T model)
         {
             if (model is null)
@@ -23,12 +23,26 @@ namespace TDD_WPF_MVVM.Wrapper
             }
             Model = model;
             _originalValues = new Dictionary<string, object?>();
-            _trackingObjects = new List<IRevertibleChangeTracking>();
+            _trackingObjects = new List<IValidatableTrackingObject>();
+            InitializeComplexProperties(model);
+            InitializeCollectionProperties(model);
+            Validate();
         }
+
+        protected virtual void InitializeCollectionProperties(T model)
+        {
+ 
+        }
+
+        protected virtual void InitializeComplexProperties(T model)
+        {
+
+        }
+
         public T Model { get; private set; }
 
         public bool IsChanged => _originalValues.Count > 0 || _trackingObjects.Any(t => t.IsChanged);
-        public bool IsValid => !HasErrors;
+        public bool IsValid => !HasErrors && _trackingObjects.All(t => t.IsValid);
 
         public void AcceptChanges()
         {
@@ -47,11 +61,12 @@ namespace TDD_WPF_MVVM.Wrapper
                 typeof(T).GetProperty(originalValueEntry.Key)!.SetValue(Model, originalValueEntry.Value);
                 //SetValue(originalValueEntry.Value,originalValueEntry.Key);
             }
+            _originalValues.Clear();
             foreach (var trackingObject in _trackingObjects)
             {
                 trackingObject.RejectChanges();
             }
-            _originalValues.Clear();
+            Validate();
             OnPropertyChanged("");
         }
 
@@ -69,32 +84,35 @@ namespace TDD_WPF_MVVM.Wrapper
             {
                 UpdateOriginalValue(currentValue, newValue, propertyName);
                 propertiInfo.SetValue(Model, newValue);
-                ValidateProperty(propertyName, newValue);
+                Validate();
                 OnPropertyChanged(propertyName);
                 OnPropertyChanged(propertyName + "IsChanged");
             }          
         }
 
-        private void ValidateProperty(string propertyName, object? newValue)
+        private void Validate()
         {
+            ClearErrors();
             var results = new List<ValidationResult>();
-            var context = new ValidationContext(this) { MemberName=propertyName };
+            var context = new ValidationContext(this);
 
-            Validator.TryValidateProperty(newValue, context, results);
+            Validator.TryValidateObject(this, context, results,true);
 
             if (results.Any())
             {
-                Errors[propertyName] = results.Select(r => r.ErrorMessage!).Distinct().ToList();
-                OnErrorsChanged(propertyName);
-                OnPropertyChanged(nameof(IsValid));
+                var propertyNames = results.SelectMany(r => r.MemberNames).Distinct().ToList();
+
+                foreach (string propertyName in propertyNames)
+                {
+                    Errors[propertyName] = results
+                        .Where(r => r.MemberNames.Contains(propertyName))
+                        .Select(r => r.ErrorMessage!)
+                        .Distinct().ToList();
+                    OnErrorsChanged(propertyName);
+                }              
             }
-            else if (Errors.ContainsKey(propertyName))
-            {
-                Errors.Remove(propertyName);
-                OnErrorsChanged(propertyName);
-                OnPropertyChanged(nameof(IsValid));
-            }            
-        }
+            OnPropertyChanged(nameof(IsValid));
+        }      
 
         private void UpdateOriginalValue(object? currentValue, object? newValue, string propertyName)
         {
@@ -129,7 +147,8 @@ namespace TDD_WPF_MVVM.Wrapper
             wrapperCollection.CollectionChanged += (s, e) =>
             {
                 modelCollection.Clear();
-                modelCollection.AddRange(wrapperCollection.Select(w => w.Model));                
+                modelCollection.AddRange(wrapperCollection.Select(w => w.Model));
+                Validate();
             };
             RegisterTrackingObject(wrapperCollection);
         }
@@ -139,7 +158,7 @@ namespace TDD_WPF_MVVM.Wrapper
             RegisterTrackingObject(wrapper);
         }
 
-        private void RegisterTrackingObject<TTrackingObject>(TTrackingObject trackingObject) where TTrackingObject: IRevertibleChangeTracking, INotifyPropertyChanged
+        private void RegisterTrackingObject(IValidatableTrackingObject trackingObject)
         {
             if (!_trackingObjects.Contains(trackingObject))
             {
@@ -154,6 +173,16 @@ namespace TDD_WPF_MVVM.Wrapper
             {
                 OnPropertyChanged(nameof(IsChanged));
             }
+
+            if (e.PropertyName == nameof(IsValid))
+            {
+                OnPropertyChanged(nameof(IsValid));
+            }
+        }
+
+        public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            yield break;
         }
     }
 }

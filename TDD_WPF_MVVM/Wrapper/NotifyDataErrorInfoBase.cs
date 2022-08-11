@@ -30,5 +30,14 @@ namespace TDD_WPF_MVVM.Wrapper
         {
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
+
+        protected void ClearErrors()
+        {
+            foreach (var propertyName in Errors.Keys.ToList())
+            {
+                Errors.Remove(propertyName);
+                OnErrorsChanged(propertyName);
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
   
         public FriendWrapperTests()
         {
-            _friendEmail = new FriendEmail { Id = 2, Email = "email2" };
+            _friendEmail = new FriendEmail { Id = 2, Email = "email@2" };
             _friend = new Friend
             {
                 FirstName = "Thijs",
@@ -26,7 +26,7 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
                 Address = new Address { City = "Mariupol"},
                 Emails = new List<FriendEmail>
                 {
-                    new FriendEmail { Id = 1, Email ="email1"},
+                    new FriendEmail { Id = 1, Email ="email@1"},
                     _friendEmail
                 }
             };
@@ -293,14 +293,14 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
         {
             var wrapper = new FriendWrapper(_friend);
             var modEmail = wrapper.Emails.First();
-            modEmail.Email = "email33";
-            Assert.Equal("email1", modEmail.EmailOriginal);
+            modEmail.Email = "email@33";
+            Assert.Equal("email@1", modEmail.EmailOriginal);
             Assert.True(wrapper.IsChanged);
 
             wrapper.AcceptChanges();
 
-            Assert.Equal("email33", modEmail.Email);
-            Assert.Equal("email33", modEmail.EmailOriginal);
+            Assert.Equal("email@33", modEmail.Email);
+            Assert.Equal("email@33", modEmail.EmailOriginal);
             Assert.False(wrapper.IsChanged);
         }
 
@@ -310,14 +310,14 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
         {
             var wrapper = new FriendWrapper(_friend);
             var modEmail = wrapper.Emails.First();
-            modEmail.Email = "email33";
-            Assert.Equal("email1", modEmail.EmailOriginal);
+            modEmail.Email = "email@33";
+            Assert.Equal("email@1", modEmail.EmailOriginal);
             Assert.True(wrapper.IsChanged);
 
             wrapper.RejectChanges();
 
-            Assert.Equal("email1", modEmail.Email);
-            Assert.Equal("email1", modEmail.EmailOriginal);
+            Assert.Equal("email@1", modEmail.Email);
+            Assert.Equal("email@1", modEmail.EmailOriginal);
             Assert.False(wrapper.IsChanged);
         }
 
@@ -388,8 +388,6 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
         [Fact]
         public void ShouldRaiseEPropertyChangedEventForIsValid()
         {
-            
-
             var wrapper = new FriendWrapper(_friend);
             var fired = wrapper.IsPropertyChangedFired(
                 () => wrapper.FirstName = "",
@@ -401,6 +399,224 @@ namespace TDD_WPF_MVVM.UITests.Wrapper
             Assert.True(fired);
         }
 
+
+
+        [Fact]
+        public void ShouldSetErrorsAndIsValidAfterInitialization()
+        {
+            _friend.FirstName = "";
+            var wrapper = new FriendWrapper(_friend);
+
+            Assert.False(wrapper.IsValid);
+            Assert.True(wrapper.HasErrors);
+
+            var errors = wrapper.GetErrors(nameof(wrapper.FirstName)).Cast<string>();
+            Assert.Single(errors);
+            Assert.Equal("Firstname is required", errors.First());
+        }
+
+        [Fact]
+        public void ShouldRefreshErrorsAndIsValidWhenRejectingChanges()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            Assert.True(wrapper.IsValid);
+            Assert.False(wrapper.HasErrors);
+
+            wrapper.FirstName = "";
+            Assert.False(wrapper.IsValid);
+            Assert.True(wrapper.HasErrors);
+
+            wrapper.RejectChanges();
+
+            Assert.True(wrapper.IsValid);
+            Assert.False(wrapper.HasErrors);
+        }
+
+
+        [Fact]
+        public void ShouldSetIsValidOfRoot()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            Assert.True(wrapper.IsValid);
+
+            wrapper.Address.City = "";
+            Assert.False(wrapper.IsValid);
+
+            wrapper.Address.City = "Salt Lake City";
+            Assert.True(wrapper.IsValid);
+        }
+
+        [Fact]
+        public void ShouldSetIsValidOfRootAfterInitialization()
+        {
+            _friend.Address.City = "";
+            var wrapper = new FriendWrapper(_friend);
+            Assert.False(wrapper.IsValid);
+
+            wrapper.Address.City = "Salt Lake City";
+            Assert.True(wrapper.IsValid);
+        }
+
+        [Fact]
+        public void ShouldRaisePropertyChangedEventForIsValidOfRoot()
+        {
+            var wrapper = new FriendWrapper(_friend);
+
+            var fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.Address.City = "",
+                nameof(wrapper.IsValid));
+            Assert.True(fired);
+        }
+
+        [Fact]
+        public void ShouldSetIsValidOfRootForEmail()
+        {
+            var wrapper = new FriendWrapper(_friend);
+            Assert.True(wrapper.IsValid);
+
+            wrapper.Emails.First().Email = "";
+            Assert.False(wrapper.IsValid);
+
+            wrapper.Emails.First().Email = "thomas@bobs.ua";
+            Assert.True(wrapper.IsValid);
+        }
+
+        [Fact]
+        public void ShouldSetIsValidOfRootAfterInitializationForEmail()
+        {
+            _friend.Emails.First().Email = "";
+            var wrapper = new FriendWrapper(_friend);
+            Assert.False(wrapper.IsValid);
+
+            wrapper.Emails.First().Email = "thomas@bobs.ua";
+            Assert.True(wrapper.IsValid);
+        }
+
+        [Fact]
+        public void ShouldSetIsValidOfRootAfterRemovingInvalidItem()
+        {
+            _friend.Emails.First().Email = "";
+            var wrapper = new FriendWrapper(_friend);
+            Assert.False(wrapper.IsValid);
+
+
+            wrapper.Emails.Remove(wrapper.Emails.First());
+            Assert.True(wrapper.IsValid);
+        }
+
+        [Fact]
+        public void ShouldSetIsValidOfRootAfterAddingInvalidItem()
+        {
+            var emailToAdd = new FriendEmailWrapper(new FriendEmail());
+            var wrapper = new FriendWrapper(_friend);
+            Assert.True(wrapper.IsValid);
+            wrapper.Emails.Add(emailToAdd);
+            Assert.False(wrapper.IsValid);
+            emailToAdd.Email = "thomas@bobs.ua";
+            Assert.True(wrapper.IsValid);
+        }
+
+
+        [Fact]
+        public void ShouldRaisePropertyChangedEventForIsValidOfRootForEmail()
+        {
+            var wrapper = new FriendWrapper(_friend);
+
+            var fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.Emails.First().Email = "",
+                nameof(wrapper.IsValid));
+            Assert.True(fired);
+        }
+
+        [Fact]
+        public void ShouldRaisePropertyChangedEventForIsValidOfRootAfterRemovingEmail()
+        {
+
+            var wrapper = new FriendWrapper(_friend);
+            var emailToRemove = wrapper.Emails.First();
+            var fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.Emails.Remove(emailToRemove),
+                nameof(wrapper.IsValid));
+            Assert.True(fired);
+        }
+
+        [Fact]
+        public void ShouldRaisePropertyChangedEventForIsValidOfRootAfterAddingEmail()
+        {
+            var emailToAdd = new FriendEmailWrapper(new FriendEmail());
+            var wrapper = new FriendWrapper(_friend);
+
+            var fired = wrapper.IsPropertyChangedFired(
+                () => wrapper.Emails.Add(emailToAdd),
+                nameof(wrapper.IsValid));
+            Assert.True(fired);
+        }
+
+
+        [Fact]
+        public void ShouldHaveErrorsAndNotBeValidWhenIsDeveloperIsTrueAndNoEmailExists()
+        {
+            var expectedError = "A developer must have an email-address";
+            _friend.IsDeveloper = false;
+            var wrapper = new FriendWrapper(_friend);
+            wrapper.Emails.Clear();
+            Assert.False(wrapper.IsDeveloper);
+            Assert.True(wrapper.IsValid);
+
+            wrapper.IsDeveloper = true;
+            Assert.False(wrapper.IsValid);
+
+            var emailsErrors = wrapper.GetErrors(nameof(wrapper.Emails)).Cast<string>().ToList();
+            Assert.Single(emailsErrors);
+            Assert.Equal(expectedError, emailsErrors[0]);
+
+            var isDeveloperErrors = wrapper.GetErrors(nameof(wrapper.IsDeveloper)).Cast<string>().ToList();
+            Assert.Single(isDeveloperErrors);
+            Assert.Equal(expectedError, isDeveloperErrors[0]);
+        }
+
+        [Fact]
+        public void ShouldBeValidAgaineWhenIsDeveloperIsSetBackToFalse()
+        {
+            var expectedError = "A developer must have an email-address";
+            _friend.IsDeveloper = false;
+            var wrapper = new FriendWrapper(_friend);
+            wrapper.Emails.Clear();
+            Assert.False(wrapper.IsDeveloper);
+            Assert.True(wrapper.IsValid);
+
+            wrapper.IsDeveloper = true;
+            Assert.False(wrapper.IsValid);
+
+            wrapper.IsDeveloper = false;
+            Assert.True(wrapper.IsValid);
+        }
+
+        [Fact]
+        public void ShouldBeValidAgainWhenEmailIsAdded()
+        {
+            _friend.IsDeveloper = false;
+            var wrapper = new FriendWrapper(_friend);
+            var emailToAdd = wrapper.Emails.First();
+            wrapper.Emails.Clear();
+            Assert.False(wrapper.IsDeveloper);
+            Assert.True(wrapper.IsValid);
+
+            wrapper.IsDeveloper = true;
+            Assert.False(wrapper.IsValid);
+
+            wrapper.Emails.Add(emailToAdd);
+            Assert.True(wrapper.IsValid);
+        }
+
+
+        [Fact]
+        public void ShouldInitWithoutProblems()
+        {
+            _friend.IsDeveloper = true;
+            var wrapper = new FriendWrapper(_friend);
+            Assert.True(wrapper.IsValid);
+        }
     }
 }
 
