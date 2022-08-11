@@ -11,6 +11,7 @@
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/Brushes.xaml"/>
+                <ResourceDictionary Source="Styles/ValidationErrorTemplates.xaml"/>
                 <ResourceDictionary Source="Styles/ControlBaseStyle.xaml"/>
                 <ResourceDictionary Source="Styles/Button.xaml"/>
                 <ResourceDictionary Source="Styles/CheckBox.xaml"/>

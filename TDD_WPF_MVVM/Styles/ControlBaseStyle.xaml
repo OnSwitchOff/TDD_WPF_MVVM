@@ -3,13 +3,17 @@
                     xmlns:behaviors="clr-namespace:TDD_WPF_MVVM.Behaviors">
 	<Style TargetType="Control" x:Key="ControlBaseStyle">
 		<Setter Property="behaviors:ChangeBehavior.IsActive" Value="True"/>
-		<Style.Triggers>
-			<Trigger Property="behaviors:ChangeBehavior.IsChanged" Value="True">
-				<Setter Property="Background" Value="{StaticResource IsChangedBackgroundBrush}"/>
-				<Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},
+        <Setter Property="Validation.ErrorTemplate" Value="{StaticResource DefaultErrorTemplate}"/>
+        <Style.Triggers>
+            <Trigger Property="behaviors:ChangeBehavior.IsChanged" Value="True">
+                <Setter Property="Background" Value="{StaticResource IsChangedBackgroundBrush}"/>
+                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},
                     Path=(behaviors:ChangeBehavior.OriginalValue)}"/>
-			</Trigger>
-		</Style.Triggers>
+            </Trigger>
+            <Trigger Property="Validation.HasError" Value="True">
+                <Setter Property="Background" Value="{StaticResource HasErrorBackgroundBrush}"/>
+            </Trigger>
+        </Style.Triggers>
 	</Style>
 	<Style TargetType="TextBlock" x:Key="TextBlockBaseStyle">
 		<Setter Property="Foreground" Value="White"/>
@@ -21,6 +25,9 @@
 				<Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},
                     Path=(behaviors:ChangeBehavior.OriginalValue)}"/>
 			</Trigger>
-		</Style.Triggers>
+            <Trigger Property="Validation.HasError" Value="True">
+                <Setter Property="Background" Value="{StaticResource HasErrorBackgroundBrush}"/>
+            </Trigger>
+        </Style.Triggers>
 	</Style>
 </ResourceDictionary>

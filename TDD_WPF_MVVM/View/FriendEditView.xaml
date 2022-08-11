@@ -23,6 +23,7 @@
             <ColumnDefinition MinWidth="200"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition MinWidth="200"/>
+            <ColumnDefinition MinWidth="10"/>
         </Grid.ColumnDefinitions>
 
         <Label Content="Firstname" Margin="5"/>
@@ -76,7 +77,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid>
-                                <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Validation.ErrorTemplate="{StaticResource ErrorInsideErrorTemplate}"/>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -98,7 +99,7 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <controls:CangeTrackingCollectionInfo DataContext="{Binding Friend.Emails}" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Margin="5,0,5,5"/>
+        <controls:CangeTrackingCollectionInfo DataContext="{Binding Friend.Emails,ValidatesOnNotifyDataErrors=False}" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Margin="5,0,5,5"/>
 
         <StackPanel Grid.Row="6" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
             <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>

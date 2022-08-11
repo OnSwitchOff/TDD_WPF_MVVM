@@ -6,13 +6,10 @@
         <Setter Property="Foreground" Value="{StaticResource DefaultForegroundBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource DefaultBorderBrush}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="behaviors:ChangeBehavior.IsActive" Value="True"/>
-        <Style.Triggers>
-            <Trigger Property="behaviors:ChangeBehavior.IsChanged" Value="True">
-                <Setter Property="Background" Value="{StaticResource IsChangedBackgroundBrush}"/>
-                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self},
-                    Path=(behaviors:ChangeBehavior.OriginalValue)}"/>
-            </Trigger>
-        </Style.Triggers>
+        <Setter Property="behaviors:ChangeBehavior.IsActive" Value="True"/>  
+    </Style>
+
+    <Style TargetType="DataGrid">
+        <Setter Property="Validation.ErrorTemplate" Value="{StaticResource DefaultErrorTemplate}"/>
     </Style>
 </ResourceDictionary>
